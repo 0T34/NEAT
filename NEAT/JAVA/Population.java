@@ -2,261 +2,113 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-enum Chance
-{
-    AddNode, AddConnection, EnableDisableConenction, AdjustBias, AddBias, AdjustWeight, Mutate
+enum Chance {
+    AddNode, AddConnection, EnableDisableConenction, AdjustBias, AddBias, Adjustweight, Mutate
 }
 
-public class Population
-{
-    public HashMap<Integer, FitnessInfo> FittestGenome;
+class Population {
+    HashMap<Integer, FitnessInfo> FittestGenome;
     
-    private HashMap<Integer, ArrayList<Genome>> fittestgenomesingeneration;
+    HashMap<Integer, ArrayList<Genome>> fittestgenomesingeneration;
   
-    public HashMap<Integer, ArrayList<Genome>> GetFittestGenomesInGeneration()
-    {
-        return this.fittestgenomesingeneration;
-    }
+    ArrayList<Species> species;
   
-    private ArrayList<Species> species;
+    int currentgeneration;
   
-    public ArrayList<Species> GetSpecies()
-    {
-        return this.species;
-    }
+    int currentspecies;
   
-    private int currentgeneration;
+    int currentgenome;
+  
+    int populationsize;
     
-    public int GetCurrentgeneration()
-    {
-      return this.currentgeneration;
+    void ResetGenomePointer() {
+        this.currentspecies = 0;
+        this.currentgenome = 0;
     }
   
-    private int currentspecies;
+    HashMap<Chance, Float> chances;
   
-    private int currentgenome;
+    int inputnodes;
   
-    private int populationsize;
+    int outputnodes;
     
-    public void ResetGenomePointer()
-    {
-      this.currentspecies = 0;
-      this.currentgenome = 0;
-    }
-  
-    private HashMap<Chance, Float> chances;
-  
-    public HashMap<Chance, Float> GetChances()
-    {
-      return this.chances;
-    }
-  
-    public int GetPopulationsize()
-    {
-      return this.populationsize;
-    }
-  
-    private int inputnodes;
-  
-    public int GetInputnodes()
-    {
-        return this.inputnodes;
-    }
+    int max_mutation_attempts;
     
-    public void SetInputnodes(int value) throws IllegalArgumentException
-    {
-      if(value > 0)
-      {
-          this.inputnodes = value;
-      }
-      else
-      {
-          throw new IllegalArgumentException("Cannot set a value smaller than 1 as the ammount of input nodes.");
-      }
-    }
+    float threshold;
   
-    private int outputnodes;
+    float excessimportance;
   
-    public int GetOutputnodes()
-    {
-        return this.outputnodes;
-    }
+    float disjointimportance;
     
-    private void SetOutputnodes(int value) throws IllegalArgumentException
-    {
-      if (value > 0)
-      {
-          this.outputnodes = value;
-      }
-      else
-      {
-          throw new IllegalArgumentException("Cannot set a value smaller than 1 as the ammount of output nodes.");
-      }      
-    }
-    
-    private int maxmutationattempts;
-    
-    public int GetMaxmutationAttempts()
-    {
-      return this.maxmutationattempts;
-    }
-    
-    public void SetMaxmutationattempts(int value) throws IllegalArgumentException
-    {
-      if (value > 0)
-      {
-          this.maxmutationattempts = value;
-      }
-      else
-      {
-          throw new IllegalArgumentException("Cannot set a value smaller than 1 as the ammount of Max Mutation Attempts.");
-      }
-    }
+    float deltaweightimportance;
   
-    private float threshold;
-    
-    public float GetThreshold()
-    {
-      return this.threshold;
-    }
-    
-    public void SetThreshold(float value) throws IllegalArgumentException
-    {
-      if (value > -1)
-      {
-        this.threshold = value;
-      }
-      else
-      {
-        throw new IllegalArgumentException("Cannot set a value smaller than 0 as the Threshold.");
-      }
-    }
+    Genome startgenome;
   
-    private float excessimportance;
-    
-    public float GetExcessImportance()
-    {
-      return this.excessimportance;
-    }
-    
-    public void SetExcessImportance(float value)
-    {
-      if(value >= 0)
-      {
-        this.excessimportance = value;
-      }
-      else
-      {
-        throw new IllegalArgumentException("ExcessImportance has to be greater than or equal to 0.");
-      }
-    }
+    InnovationMachine innovationmachine;
   
-    private float disjointimportance;
-    
-    public float GetDisjointImportance()
-    {
-      return this.disjointimportance;
-    }
-    
-    public void SetDisjointImportance(float value) throws IllegalArgumentException
-    {
-      if (value >= 0)
-      {
-          this.disjointimportance = value;
-      }
-      else
-      {
-          throw new IllegalArgumentException("DisjointImportance has to be greater than or equal to 0.");
-      }
-    }
-    
-    private float deltaweightimportance;
-    
-    public float GetDeltaWeightImportance()
-    {
-      return this.deltaweightimportance;
-    }
-    
-    public void SetDeltaWeightImportance(float value) throws IllegalArgumentException
-    {
-      if (value >= 0)
-      {
-          this.deltaweightimportance = value;
-      }
-      else
-      {
-          throw new IllegalArgumentException("DeltaWeightImportance has to be greater than or equal to 0.");
-      }
-    }
-  
-    private Genome startgenome;
-  
-    private InnovationMachine innovationmachine;
-  
-    public InnovationMachine GetInnovationMachine()
-    {
-        return this.innovationmachine;
-    }
-  
-    public Population(int populationsize, int inputnodes, int outputnodes, int maxmutationattempts, float threshold, float excessimportance, 
-        float disjointimportance, float averageweightdiffimportance, HashMap<Chance, Float> chances, Random r)
-    {
-        this(populationsize, new Genome(inputnodes, outputnodes, maxmutationattempts), threshold, excessimportance, disjointimportance,
-              averageweightdiffimportance, chances, r);
-    }
-  
-    public Population(int populationsize, Genome startgenome, float threshold, float excessimportance, float disjointimportance,
-        float averageweightdiffimportance, HashMap<Chance, Float> chances, Random r)
-    {
+    Population(int populationsize, int inputnodes, int outputnodes, int max_mutation_attempts, float threshold, float excessimportance, 
+               float disjointimportance, float averageweightdiffimportance, HashMap<Chance, Float> chances, Random r) {
         SetupChances(chances);
-        this.maxmutationattempts = startgenome.GetMaxMutationAttempts();
+        this.max_mutation_attempts = startgenome.max_mutation_attempts;
         this.populationsize = populationsize;
-        this.SetInputnodes(startgenome.GetInputs());
-        this.SetOutputnodes(startgenome.GetOutputs());
-        this.SetThreshold(threshold);
-        this.SetDeltaWeightImportance(averageweightdiffimportance);
-        this.SetDisjointImportance(disjointimportance);
-        this.SetExcessImportance(excessimportance);
+        this.inputnodes = startgenome.inputs;
+        this.outputnodes = startgenome.outputs;
+        this.threshold = threshold;
+        this.deltaweightimportance = averageweightdiffimportance;
+        this.disjointimportance = disjointimportance;
+        this.excessimportance = excessimportance;
+        this.startgenome = new Genome(inputnodes, outputnodes, max_mutation_attempts);
+        this.innovationmachine = new InnovationMachine(this.startgenome.GetMaxinnovation() + 1);
+        ResetPopulation(r);
+    }
+
+    Population(int populationsize, Genome startgenome, float threshold, float excessimportance, float disjointimportance,
+               float averageweightdiffimportance, HashMap<Chance, Float> chances, Random r) {
+        SetupChances(chances);
+        this.max_mutation_attempts = startgenome.max_mutation_attempts;
+        this.populationsize = populationsize;
+        this.inputnodes = startgenome.inputs;
+        this.outputnodes = startgenome.outputs;
+        this.threshold = threshold;
+        this.deltaweightimportance = averageweightdiffimportance;
+        this.disjointimportance = disjointimportance;
+        this.excessimportance = excessimportance;
         this.startgenome = startgenome;
         this.innovationmachine = new InnovationMachine(this.startgenome.GetMaxinnovation() + 1);
         ResetPopulation(r);
     }
   
-    private void SetupChances(HashMap<Chance, Float> chances)
-    {
+    void SetupChances(HashMap<Chance, Float> chances) {
         // Set up the default chances
         this.chances = new HashMap<Chance, Float>();
-        this.GetChances().put(Chance.Mutate, 1f);
-        this.GetChances().put(Chance.AddBias, 0.05f);
-        this.GetChances().put(Chance.AddConnection, 0.05f);
-        this.GetChances().put(Chance.AddNode, 0.03f);
-        this.GetChances().put(Chance.AdjustBias, 0.8f);
-        this.GetChances().put(Chance.AdjustWeight, 0.8f);
-        this.GetChances().put(Chance.EnableDisableConenction, 0f);
+        this.chances.put(Chance.Mutate, 1f);
+        this.chances.put(Chance.AddBias, 0.05f);
+        this.chances.put(Chance.AddConnection, 0.05f);
+        this.chances.put(Chance.AddNode, 0.03f);
+        this.chances.put(Chance.AdjustBias, 0.8f);
+        this.chances.put(Chance.Adjustweight, 0.8f);
+        this.chances.put(Chance.EnableDisableConenction, 0.0f);
   
         // If other chances are specified override the default ones
-        if(chances != null)
-        {
-          Object[] keys = chances.keySet().toArray();
-          for(int i = 0; i < chances.size(); i++)
-          {
-            Chance _key = (Chance) keys[i];
-            this.GetChances().put(_key, chances.get(_key));
-          }
+        if (chances != null) {
+            Object[] keys = chances.keySet().toArray();
+            for (int i = 0; i < chances.size(); i++) {
+                Chance _key = (Chance) keys[i];
+                this.chances.put(_key, chances.get(_key));
+            }
         }
     }
     
-    public void ResetPopulation(Random r)
-    {
-        this.GetInnovationMachine().Reset();
-        for(Connection c : this.startgenome.GetConnections())
-        {
-            this.GetInnovationMachine().AddConnection(c);
+    void ResetPopulation(Random r) {
+        this.innovationmachine.Reset();
+        for (Connection c : this.startgenome.connections) {
+            this.innovationmachine.AddConnection(c);
         }
-        for(Bias b : this.startgenome.GetBiases())
-        {
-            this.GetInnovationMachine().AddBias(b);
+
+        for (Bias b : this.startgenome.biases) {
+            this.innovationmachine.AddBias(b);
         }
+
         this.species = new ArrayList<Species>();
         this.currentgeneration = 1;
         ResetGenomePointer();
@@ -264,137 +116,118 @@ public class Population
         this.fittestgenomesingeneration = new HashMap<Integer, ArrayList<Genome>>();
         this.FittestGenome = new HashMap<Integer, FitnessInfo>();
         ArrayList<Genome> population = new ArrayList<Genome>();
-        while (population.size() < this.GetPopulationsize())
-        {
+        while (population.size() < this.populationsize) {
             Genome genometoadd = startgenome.Copy();
-            genometoadd.AddConnectionMutation(this.GetInnovationMachine(), r);
+            genometoadd.AddConnectionMutation(this.innovationmachine, r);
             population.add(genometoadd);
         }
+
         this.Speciate(population, r);
     }
   
-    public int SharingFunction(float i)
-    {
-        if(i >= this.GetThreshold())
-        {
+    int SharingFunction(float i) {
+        if (i >= this.threshold) {
             return 1;
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
   
-    public void SetFitness(Genome g, float fitness)
-    {
-        for(Species s : this.GetSpecies())
-        {
-            for(FitnessInfo fi : s.GetGenomes())
-            {
-                if (fi.Genome == g)
-                {
+    void SetFitness(Genome g, float fitness) {
+        for (Species s : this.species) {
+            for (FitnessInfo fi : s.genomes) {
+                if (fi.Genome == g) {
                     fi.Fitness = fitness;
-                    fi.SharedFitness = fitness / s.GetGenomes().size();
+                    fi.SharedFitness = fitness / s.genomes.size();
                     return;
                 }
             }
         }
     }
   
-    public Genome NextGenome()
-    {
-        Genome nextgenome = this.GetSpecies().get(this.currentspecies).GetGenomes().get(this.currentgenome).Genome;
+    Genome NextGenome() {
+        Genome nextgenome = this.species.get(this.currentspecies).genomes.get(this.currentgenome).Genome;
         this.currentgenome++;
-        if(this.GetSpecies().get(this.currentspecies).GetGenomes().size() <= this.currentgenome)
-        {
+        if (this.species.get(this.currentspecies).genomes.size() <= this.currentgenome) {
             this.currentgenome = 0;
             this.currentspecies++;
-            this.currentspecies %= this.GetSpecies().size();
+            this.currentspecies %= this.species.size();
         }
+
         return nextgenome;
     }
   
-    public void NextGeneration(Random r)
-    {
+    void NextGeneration(Random r) {
         ArrayList<Genome> population = new ArrayList<Genome>();
         float totalfitness = 0;
-        this.GetFittestGenomesInGeneration().put(this.GetCurrentgeneration(), new ArrayList<Genome>());
+        this.fittestgenomesingeneration.put(this.currentgeneration, new ArrayList<Genome>());
   
-        for (int i = 0; i < this.GetSpecies().size(); i++)
-        {
-            this.GetSpecies().get(i).CheckStaleness();
-            if (this.GetSpecies().get(i).GetStaleness() >= 15)
-            {
-                if (this.GetSpecies().size() > 1)
-                {
-                    this.GetSpecies().remove(i--);
+        for (int i = 0; i < this.species.size(); i++) {
+            this.species.get(i).CheckStaleness();
+            if (this.species.get(i).staleness >= 15) {
+                if (this.species.size() > 1) {
+                    this.species.remove(i--);
                     continue;
                 }
             }
-            this.GetSpecies().get(i).KillOffWorst();
-            totalfitness += this.GetSpecies().get(i).GetTotalSharedFitness();
-            FitnessInfo fittestgenomeinfo = this.GetSpecies().get(i).GetFittestGenome();
-            if(this.FittestGenome.get(this.GetCurrentgeneration()) == null || this.FittestGenome.get(this.GetCurrentgeneration()).Fitness < fittestgenomeinfo.Fitness)
-            {
-              this.FittestGenome.put(this.GetCurrentgeneration(), fittestgenomeinfo);
+
+            this.species.get(i).KillOffWorst();
+            totalfitness += this.species.get(i).GetTotalSharedFitness();
+            FitnessInfo fittestgenomeinfo = this.species.get(i).GetFittestGenome();
+            if (this.FittestGenome.get(this.currentgeneration) == null || this.FittestGenome.get(this.currentgeneration).Fitness < fittestgenomeinfo.Fitness) {
+                this.FittestGenome.put(this.currentgeneration, fittestgenomeinfo);
             }
-            this.GetFittestGenomesInGeneration().get(this.GetCurrentgeneration()).add(fittestgenomeinfo.Genome.Copy());
+
+            this.fittestgenomesingeneration.get(this.currentgeneration).add(fittestgenomeinfo.Genome.Copy());
             population.add(fittestgenomeinfo.Genome.Copy());
         }
+
         this.currentgeneration++;
-        while (population.size() < this.GetPopulationsize())
-        {
+        while (population.size() < this.populationsize) {
             Genome offspring = this.CreateOffspring(r.nextFloat() * totalfitness, r);
             this.Mutate(offspring, r);
             population.add(offspring);
         }
+
         Speciate(population, r);
     }
   
-    public void Mutate(Genome g, Random r)
-    {
-        if (r.nextFloat() <= this.GetChances().get(Chance.Mutate))
-        {
-            if (r.nextFloat() <= this.GetChances().get(Chance.AddBias))
-            {
-                g.AddBiasMutation(this.GetInnovationMachine(), r);
+    void Mutate(Genome g, Random r) {
+        if (r.nextFloat() <= this.chances.get(Chance.Mutate)) {
+            if (r.nextFloat() <= this.chances.get(Chance.AddBias)) {
+                g.AddBiasMutation(this.innovationmachine, r);
             }
-            if (r.nextFloat() <= this.GetChances().get(Chance.AddConnection))
-            {
-                g.AddConnectionMutation(this.GetInnovationMachine(), r);
+
+            if (r.nextFloat() <= this.chances.get(Chance.AddConnection)) {
+                g.AddConnectionMutation(this.innovationmachine, r);
             }
-            if (r.nextFloat() <= this.GetChances().get(Chance.AddNode))
-            {
-                g.AddNodeMutation(this.GetInnovationMachine(), r);
+
+            if (r.nextFloat() <= this.chances.get(Chance.AddNode)) {
+                g.AddNodeMutation(this.innovationmachine, r);
             }
-            if (r.nextFloat() <= this.GetChances().get(Chance.AdjustBias))
-            {
+
+            if (r.nextFloat() <= this.chances.get(Chance.AdjustBias)) {
                 g.AdjustBiasMutation(r);
             }
-            if (r.nextFloat() <= this.GetChances().get(Chance.AdjustWeight))
-            {
-                g.AdjustWeightMutation(r);
+
+            if (r.nextFloat() <= this.chances.get(Chance.Adjustweight)) {
+                g.AdjustweightMutation(r);
             }
-            if (r.nextFloat() <= this.GetChances().get(Chance.EnableDisableConenction))
-            {
+
+            if (r.nextFloat() <= this.chances.get(Chance.EnableDisableConenction)) {
                 g.EnableDisableConnectionMutation(r);
             }
         }
     }
   
-    private Genome CreateOffspring(float fitness, Random r)
-    {
+    Genome CreateOffspring(float fitness, Random r) {
         Genome offspring = null;
-        int speciescount = this.GetSpecies().size();
-        for (Species s : this.GetSpecies())
-        {
-            if (fitness - s.GetTotalSharedFitness() <= 0 || s == this.GetSpecies().get(speciescount - 1))
-            {
+        int speciescount = this.species.size();
+        for (Species s : this.species) {
+            if (fitness - s.GetTotalSharedFitness() <= 0 || s == this.species.get(speciescount - 1)) {
                 offspring = s.CreateOffspring(r);
                 return offspring;
-            }
-            else
-            {
+            } else {
                 fitness -= s.GetTotalSharedFitness();
             }
         }
@@ -402,40 +235,30 @@ public class Population
         return offspring;
     }
   
-    private void Speciate(ArrayList<Genome> population, Random r)
-    {
-        for(Species s : this.GetSpecies())
-        {
-            s.Representative = s.GetGenomes().get(Math.round(r.nextFloat() * (s.GetGenomes().size() - 1))).Genome;
+    void Speciate(ArrayList<Genome> population, Random r) {
+        for (Species s : this.species) {
+            s.Representative = s.genomes.get(Math.round(r.nextFloat() * (s.genomes.size() - 1))).Genome;
             s.Clear();
         }
   
-        for(Genome g : population)
-        {
+        for (Genome g : population) {
             boolean wasadded = false;
-  
-            for(Species s : this.GetSpecies())
-            {
-                if (GenomeHelper.GetCompatibilityDistance(s.Representative, g, this.GetExcessImportance(), this.GetDisjointImportance(), 
-                    this.GetDeltaWeightImportance()) <= this.GetThreshold())
-                {
+            for (Species s : this.species) {
+                if (GenomeHelper.GetCompatibilityDistance(s.Representative, g, this.excessimportance, this.disjointimportance, this.deltaweightimportance) <= this.threshold) {
                     s.AddGenome(g);
                     wasadded = true;
                     break;
                 }
             }
   
-            if(!wasadded)
-            {
-                this.GetSpecies().add(new Species(g));
+            if (!wasadded) {
+                this.species.add(new Species(g));
             }
         }
   
-        for(int i = 0; i < this.GetSpecies().size(); i++)
-        {
-            if (this.GetSpecies().get(i).GetGenomes().size() == 0)
-            {
-                this.GetSpecies().remove(i--);
+        for (int i = 0; i < this.species.size(); i++) {
+            if (this.species.get(i).genomes.size() == 0) {
+                this.species.remove(i--);
             }
         }
     }

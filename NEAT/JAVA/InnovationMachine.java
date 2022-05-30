@@ -1,107 +1,84 @@
 import java.util.ArrayList;
 
-public class InnovationMachine
-{
-  private int innovation;
+class InnovationMachine {
+    int innovation;
 
-  public int GetInnovation()
-  {
-      return this.innovation;
-  }
+    ArrayList<Connection> existingconnections;
 
-  private ArrayList<Connection> existingconnections;
+    ArrayList<Bias> existingbiases;
 
-  private ArrayList<Bias> existingbiases;
-  
-  // assigns the connection an innovationnumber and adds the connection to the exisitingconnections if it doesnt already exist
-  public void GetInnovation(Connection c)
-  {
-    for(Connection con : this.existingconnections)
-    {
-      if (con.equals(c))
-      {
-        c.SetInnovationnumber(con.GetInnovationnumber());
-        return;
-      }
+    int startinnovation;
+    
+    // assigns the connection an innovation_number and adds the connection to the exisitingconnections if it doesnt already exist
+    void GetInnovation(Connection c) {
+        for (Connection con : this.existingconnections) {
+            if (c.source_node_id == con.source_node_id && c.target_node_id == con.target_node_id) {
+                c.innovation_number = con.innovation_number;
+                return;
+            }
+        }
+
+        c.innovation_number = this.innovation++;
+        this.AddConnection(c.Copy());
     }
-    c.SetInnovationnumber(this.innovation++);
-    this.AddConnection(c.Copy());
-  }
 
-  // assigns the bias an innovationnumber and adds the bias to the exisitingbiases if it doesnt already exist
-  public void GetInnovation(Bias b)
-  {
-    for(Bias bias : this.existingbiases)
-    {
-      if (bias.equals(b))
-      {
-        b.SetInnovationnumber(bias.GetInnovationnumber());
-        return;
-      }
-    }
-    b.SetInnovationnumber(this.innovation++);
-    this.AddBias(b.Copy());
-  }
-  
-  public void AddConnection(Connection c)
-  {
-    if(!this.ContainsConnection(c))
-    {
-      this.existingconnections.add(c);
-    }
-  }
-  
-  public boolean ContainsConnection(Connection contofind)
-  {
-    for(Connection c : this.existingconnections)
-    {
-      if(c.equals(contofind))
-      {
-        return true;
-      }
+    // assigns the bias an innovation_number and adds the bias to the exisitingbiases if it doesnt already exist
+    void GetInnovation(Bias b) {
+        for (Bias bias : this.existingbiases) {
+            if (bias.node == b.node) {
+                b.innovation_number = bias.innovation_number;
+                return;
+            }
+        }
+
+        b.innovation_number = this.innovation++;
+        this.AddBias(b.Copy());
     }
     
-    return false;
-  }
-  
-  public void AddBias(Bias b)
-  {
-    if(!this.ContainsBias(b))
-    {
-      this.existingbiases.add(b);
-    }
-  }
-  
-  public boolean ContainsBias(Bias biastofind)
-  {
-    for(Bias b : this.existingbiases)
-    {
-      if(b.equals(biastofind))
-      {
-        return true;
-      }
+    void AddConnection(Connection c) {
+        if (!this.ContainsConnection(c)) {
+            this.existingconnections.add(c);
+        }
     }
     
-    return false;
-  }
+    boolean ContainsConnection(Connection contofind) {
+        for (Connection c : this.existingconnections) {
+            if (c.source_node_id == contofind.source_node_id && c.target_node_id == contofind.target_node_id) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    void AddBias(Bias b) {
+        if (!this.ContainsBias(b)) {
+            this.existingbiases.add(b);
+        }
+    }
+    
+    boolean ContainsBias(Bias biastofind) {
+        for (Bias b : this.existingbiases) {
+            if (b.node == biastofind.node) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
-  public void Reset()
-  {
-    this.existingconnections = new ArrayList<Connection>();
-    this.existingbiases = new ArrayList<Bias>();
-    this.innovation = startinnovation;
-  }
+    void Reset() {
+        this.existingconnections = new ArrayList<Connection>();
+        this.existingbiases = new ArrayList<Bias>();
+        this.innovation = startinnovation;
+    }
 
-  public InnovationMachine()
-  {
-    this(1);
-  }
-  
-  private int startinnovation;
-  
-  public InnovationMachine(int startinnovation)
-  {
-    this.startinnovation = startinnovation;
-    Reset();
-  }
+    InnovationMachine() {
+        this(1);
+    }
+    
+    InnovationMachine(int startinnovation) {
+        this.startinnovation = startinnovation;
+        Reset();
+    }
 }

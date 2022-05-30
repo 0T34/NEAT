@@ -1,40 +1,25 @@
-enum Nodetype
-{
-  Input, Hidden, Output
+enum Nodetype {
+    Input, Hidden, Output
 }
 
-public class Node
-{  
-  private int id;
-  
-  // Identification number of the node
-  public int GetID()
-  {
-    return this.id;
-  }
+class Node {
+    // Identification number of the node 
+    int id;
 
-  private Nodetype type;
+    // Gives Info about what the node is used for.
+    Nodetype type;
 
-  // Gives Info about what the node is used for.
-  public Nodetype GetType()
-  {
-    return this.type;
-  }
+    Node(int id, Nodetype type) {
+        this.id = id;
+        this.type = type;
+    }
 
-  public Node(int id, Nodetype type)
-  {
-    this.id = id;
-    this.type = type;
-  }
+    Node Copy() {
+        return new Node(this.id, this.type);
+    }
 
-  public Node Copy()
-  {
-    return new Node(this.GetID(), this.GetType());
-  }
-
-  @Override
-  public String toString()
-  {
-    return "ID: " + this.GetID() + "\nNodetype: " + this.GetType() + System.lineSeparator();
-  }
+    @Override
+    public String toString() {
+        return "ID: " + this.id + "\nNodetype: " + this.type + "\n";
+    }
 }

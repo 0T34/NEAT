@@ -1,81 +1,42 @@
-public class Connection
-{
-  // Value represents the Weight of the Connection.
-  public float Weight;
+class Connection {
+    // Represents the weight of the Connection.
+    float weight;
 
-  private int sourcenodeid;
-  
-  // Indicates where the Connection starts.
-  public int GetSourceNodeID()
-  {
-    return this.sourcenodeid;
-  }
+    // Indicates where the Connection starts.
+    int source_node_id;
 
-  private int targetnodeid;
-  
-  // Indicates where the Connection ends.
-  public int GetTargetNodeID()
-  {
-    return this.targetnodeid;
-  }
-  
-  private int innovationnumber;
-  
-  public void SetInnovationnumber(int value)
-  {
-    this.innovationnumber = value;
-  }
-  
-  // Provides Info about the historical origion of the connection.
-  public int GetInnovationnumber()
-  {
-    return this.innovationnumber;
-  }
+    // Indicates where the Connection ends.
+    int target_node_id;
+    
+    // Provides Info about the historical origion of the connection.
+    int innovation_number;
 
-  // Gives information about whether or not the connection is enabled
-  public boolean IsExpressed;
+    // Gives information about whether or not the connection is enabled
+    boolean is_expressed;
 
-  public Connection()
-  {
-      this(-1, -2, false, -1, 0f);
-  }
-
-  public Connection(int sourcenodeid, int targetnodeid, boolean isexpressed, int innovationnumber, float value) throws IllegalArgumentException
-  {
-    if (sourcenodeid == targetnodeid)
-    {
-      throw new IllegalArgumentException("Connection cannot have the same source and target.");
+    Connection() {
+        this(-1, -2, false, -1, 0.0f);
     }
 
-    this.sourcenodeid = sourcenodeid;
-    this.targetnodeid = targetnodeid;
-    this.IsExpressed = isexpressed;
-    this.innovationnumber = innovationnumber;
-    this.Weight = value;
-  }
-
-  @Override
-  public boolean equals(Object obj)
-  {
-    if (obj instanceof Connection)
-    {
-      Connection conToCompareTo = (Connection)obj;
-      return (this.GetSourceNodeID() == conToCompareTo.GetSourceNodeID())
-        && (this.GetTargetNodeID() == conToCompareTo.GetTargetNodeID());
+    Connection(int source_node_id, int target_node_id, boolean isexpressed, int innovation_number, float value) {
+        this.source_node_id = source_node_id;
+        this.target_node_id = target_node_id;
+        this.is_expressed = isexpressed;
+        this.innovation_number = innovation_number;
+        this.weight = value;
     }
 
-    return false;
-  }
+    Connection Copy() {
+        return new Connection(this.source_node_id, this.target_node_id, this.is_expressed, this.innovation_number, this.weight);
+    }
 
-  public Connection Copy()
-  {
-    return new Connection(this.GetSourceNodeID(), this.GetTargetNodeID(), this.IsExpressed, this.GetInnovationnumber(), this.Weight);
-  }
-
-  @Override
-  public String toString()
-  {
-    return " SourcenodeID: " + this.GetSourceNodeID() + " TargetnodeID: " + this.GetTargetNodeID() +
-      " IsExpressed: " + this.IsExpressed + " Innovationnumber: " + this.GetInnovationnumber() + " Value: " + this.Weight + System.lineSeparator();
-  }
+    @Override
+    public String toString() {
+        return " SourcenodeID: " + this.source_node_id +
+               " TargetnodeID: " + this.target_node_id +
+               " is_expressed: " + this.is_expressed +
+               " Innovationnumber: " + this.innovation_number +
+               " value: " + this.weight +
+               "\n";
+    }
 }

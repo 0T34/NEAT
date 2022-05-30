@@ -1,19 +1,12 @@
 import java.util.Comparator;
 
-public class SpeciesComparer implements Comparator<Species>
-{
-    public int compare(Species x, Species y)
-    {
-        if (x.GetTotalSharedFitness() > y.GetTotalSharedFitness())
-        {
+class SpeciesComparer implements Comparator<Species> {
+    public int compare(Species x, Species y) {
+        if (x.GetTotalSharedFitness() > y.GetTotalSharedFitness()) {
             return 1;
-        }
-        else if (x.GetTotalSharedFitness() < y.GetTotalSharedFitness())
-        {
+        } else if (x.GetTotalSharedFitness() < y.GetTotalSharedFitness()) {
             return -1;
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }

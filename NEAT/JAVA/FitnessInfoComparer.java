@@ -1,19 +1,12 @@
 import java.util.Comparator;
 
-public class FitnessInfoComparer implements Comparator<FitnessInfo>
-{
-    public int compare(FitnessInfo x, FitnessInfo y)
-    {
-        if(x.Fitness > y.Fitness)
-        {
+class FitnessInfoComparer implements Comparator<FitnessInfo> {
+    public int compare(FitnessInfo x, FitnessInfo y) {
+        if (x.Fitness > y.Fitness) {
             return 1;
-        }
-        else if(x.Fitness < y.Fitness)
-        {
+        } else if (x.Fitness < y.Fitness) {
             return -1;
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }

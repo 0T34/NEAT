@@ -1,160 +1,118 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Species
+class Species
 {
-  private int staleness;
+    int staleness;
 
-  public int GetStaleness()
-  {
-    return this.staleness;
-  }
+    Genome Representative;
 
-  public Genome Representative;
+    float bestfitness;
 
-  private float bestfitness;
+    float GetTotalSharedFitness() {
+        float totalfitness = 0;
+        for (FitnessInfo fi : this.genomes) {
+            totalfitness += fi.SharedFitness;
+        }
 
-  public float GetTotalSharedFitness()
-  {
-    float totalfitness = 0;
-
-    for(FitnessInfo fi : this.GetGenomes())
-    {
-        totalfitness += fi.SharedFitness;
+        return totalfitness;
     }
 
-    return totalfitness;
-  }
+    FitnessInfo GetFittestGenome() {
+        if (this.genomes.size() > 0) {
+            FitnessInfo fittest = this.genomes.get(0);
 
-  public FitnessInfo GetFittestGenome()
-  {
-      if (this.GetGenomes().size() > 0)
-      {
-        FitnessInfo fittest = this.GetGenomes().get(0);
+            for (FitnessInfo fg : this.genomes) {
+                if (fg.Fitness > fittest.Fitness) {
+                    fittest = fg;
+                }
+            }
 
-        for (FitnessInfo fg : this.GetGenomes())
-        {
-            if (fg.Fitness > fittest.Fitness)
-            {
-                fittest = fg;
+            return fittest;
+        } else {
+            return null;
+        }
+    }
+
+    ArrayList<FitnessInfo> genomes;
+
+    Species(Genome representative) {
+        this(representative, new ArrayList<FitnessInfo>());
+    }
+
+    void AddGenome(Genome genometoadd) {
+        if (genometoadd != null) {
+            for (FitnessInfo fg : this.genomes) {
+                if (fg.Genome == genometoadd) {
+                    return;
+                }
+            }
+
+            this.genomes.add(new FitnessInfo(genometoadd, 0.0f, 0.0f));
+        }
+    }
+
+    Genome CreateOffspring(Random r) {
+        FitnessInfo[] parents = new FitnessInfo[2];
+        int genomecount = this.genomes.size();
+        for (int i = 0; i < parents.length; i++) {
+            float randomfitness = r.nextFloat() * this.GetTotalSharedFitness();
+            for (FitnessInfo fg : this.genomes) {
+                randomfitness -= fg.SharedFitness;
+                if (randomfitness <= 0 || fg == this.genomes.get(genomecount -1 )) {
+                    parents[i] = fg;
+                    break;
+                }
             }
         }
 
-        return fittest;
-      }
-      else
-      {
-          return null;
-      }
-  }
+        return GenomeHelper.Crossover(parents[0].Genome, parents[1].Genome, parents[0].Fitness, parents[1].Fitness, r);
+    } 
 
-  private ArrayList<FitnessInfo> genomes;
+    Species(Genome representative, ArrayList<FitnessInfo> genomes) {
+        this.Representative = representative;
+        if (genomes != null) {
+            this.genomes = genomes;
+            for (FitnessInfo fg : this.genomes) {
+                if (fg.Genome == representative) {
+                    return;
+                }
+            }
 
-  public ArrayList<FitnessInfo> GetGenomes()
-  {
-    return this.genomes;
-  }
+            this.genomes.add(new FitnessInfo(representative, 0.0f, 0.0f));
+        } else {
+            this.genomes = new ArrayList<FitnessInfo>();
+        }
+    }
 
-  public Species(Genome representative)
-  {
-    this(representative, new ArrayList<FitnessInfo>());
-  }
+    void KillOffWorst() {
+        this.genomes.sort(new FitnessInfoComparer());
+        while(this.genomes.size() > 5) {
+            this.genomes.remove(0);
+        }
+    }
 
-  public void AddGenome(Genome genometoadd)
-  {
-      if(genometoadd != null)
-      {
-          for(FitnessInfo fg : this.GetGenomes())
-          {
-              if(fg.Genome == genometoadd)
-              {
-                  return;
-              }
-          }
-          this.GetGenomes().add(new FitnessInfo(genometoadd, 0f, 0f));
-      }
-  }
+    void CheckStaleness() {
+        if (this.GetTotalSharedFitness()  <= this.bestfitness) {
+            this.staleness++;
+        } else {
+            this.bestfitness = this.GetTotalSharedFitness();
+            if (staleness != 0) {
+                staleness = 0;
+            }
+        }
+    }
 
-  public Genome CreateOffspring(Random r)
-  {
-      FitnessInfo[] parents = new FitnessInfo[2];
-      int genomecount = this.GetGenomes().size();
-      for(int i = 0; i < parents.length; i++)
-      {
-          float randomfitness = r.nextFloat() * this.GetTotalSharedFitness();
+    Species Copy() {
+        Species copy = new Species(this.Representative.Copy());
+        for (FitnessInfo fg : this.genomes) {
+            copy.AddGenome(fg.Genome.Copy());
+        }
+        
+        return copy;
+    }
 
-          for(FitnessInfo fg : this.GetGenomes())
-          {
-              randomfitness -= fg.SharedFitness;
-              if(randomfitness <= 0 || fg == this.GetGenomes().get(genomecount -1 ))
-              {
-                  parents[i] = fg;
-                  break;
-              }
-          }
-      }
-
-      return GenomeHelper.Crossover(parents[0].Genome, parents[1].Genome, parents[0].Fitness, parents[1].Fitness, r);
-  } 
-
-  public Species(Genome representative, ArrayList<FitnessInfo> genomes)
-  {
-      this.Representative = representative;
-      if(genomes != null)
-      {
-          this.genomes = genomes;
-          for (FitnessInfo fg : this.GetGenomes())
-          {
-              if (fg.Genome == representative)
-              {
-                  return;
-              }
-          }
-          this.GetGenomes().add(new FitnessInfo(representative, 0f, 0f));
-      }
-      else
-      {
-          this.genomes = new ArrayList<FitnessInfo>();
-      }
-  }
-
-  public void KillOffWorst()
-  {
-      this.GetGenomes().sort(new FitnessInfoComparer());
-      while(this.GetGenomes().size() > 5)
-      {
-          this.GetGenomes().remove(0);
-      }
-  }
-
-  public void CheckStaleness()
-  {
-      if(this.GetTotalSharedFitness()  <= this.bestfitness)
-      {
-          this.staleness++;
-      }
-      else
-      {
-          this.bestfitness = this.GetTotalSharedFitness();
-          if(staleness != 0)
-          {
-              staleness = 0;
-          }
-      }
-  }
-
-  public Species Copy()
-  {
-      Species copy = new Species(this.Representative.Copy());
-      for(FitnessInfo fg : this.GetGenomes())
-      {
-          copy.AddGenome(fg.Genome.Copy());
-      }
-      return copy;
-  }
-
-  public void Clear()
-  {
-      this.GetGenomes().clear();
-  }
+    void Clear() {
+        this.genomes.clear();
+    }
 }

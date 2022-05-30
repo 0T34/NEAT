@@ -1,57 +1,26 @@
-public class Bias
-{
-  private int innovationnumber;
+class Bias {
+    // Provides Info about the historical origion of the connection.
+    int innovation_number;
+    
+    // Value of the Bias
+    float value;
+
+    // Node the bias is atteched to
+    int node;
   
-  public void SetInnovationnumber(int value)
-  {
-    this.innovationnumber = value;
-  }
-
-  // Provides Info about the historical origion of the connection.
-  public int GetInnovationnumber()
-  {
-    return this.innovationnumber;
-  }
-  
-  // Value of the Bias
-  public float Value;
-
-  private int node;
-  
-  // Node the bias is atteched to
-  public int GetNode()
-  {
-    return this.node;
-  }
-
-  public Bias(int node, float value, int innovationnumber)
-  {
-    this.node = node;
-    this.Value = value;
-    this.innovationnumber = innovationnumber;
-  }
-  
-  // Creates a copy of the bias
-  public Bias Copy()
-  {
-    return new Bias(this.GetNode(), this.Value, this.GetInnovationnumber());
-  }
-
-  @Override
-  public String toString()
-  {
-    return "Node: " + this.GetNode() + " Innovationnumber: " + this.GetInnovationnumber() + "Value: " + this.Value + System.lineSeparator();
-  }
-
-  @Override
-  public boolean equals(Object obj)
-  {
-    if (obj instanceof Bias)
-    {
-      Bias biasToCompareTo = (Bias)obj;
-      return (this.GetNode() == biasToCompareTo.GetNode());
+    Bias(int node, float value, int innovation_number) {
+        this.node = node;
+        this.value = value;
+        this.innovation_number = innovation_number;
+    }
+    
+    // Creates a copy of the bias
+    Bias Copy() {
+        return new Bias(this.node, this.value, this.innovation_number);
     }
 
-    return false;
-  }
+    @Override
+    public String toString() {
+        return "Node: " + this.node + " Innovationnumber: " + this.innovation_number + "value: " + this.value + "\n";
+    }
 }

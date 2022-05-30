@@ -1,13 +1,9 @@
-public class FitnessInfo
-{
-    public Genome Genome;
-    
-    public float Fitness;
+class FitnessInfo {
+    Genome Genome;
+    float Fitness;
+    float SharedFitness;
 
-    public float SharedFitness;
-
-    public FitnessInfo(Genome genome, float fitness, float sharedfitness)
-    {
+    FitnessInfo(Genome genome, float fitness, float sharedfitness) {
         this.Genome = genome;
         this.Fitness = fitness;
         this.SharedFitness = sharedfitness;
