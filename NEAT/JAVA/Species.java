@@ -86,8 +86,17 @@ class Species
     }
 
     void KillOffWorst() {
-        this.genomes.sort(new FitnessInfoComparer());
-        while(this.genomes.size() > 5) {
+        for (int i = 0; i < this.genomes.size(); ++i) {
+            for (int j = i + 1; j < this.genomes.size(); ++j) {
+                if (this.genomes.get(i).Fitness > this.genomes.get(j).Fitness) {
+                    FitnessInfo tmp = this.genomes.get(i);
+                    this.genomes.set(i, this.genomes.get(j));
+                    this.genomes.set(j, tmp);
+                }
+            }
+        }
+          
+        while (this.genomes.size() > 5) {
             this.genomes.remove(0);
         }
     }
