@@ -8,10 +8,6 @@ class Network {
 
     HashMap<Integer, Boolean> hasBeenCalculatedAtNode;
 
-    Network() {
-        this(new Genome());
-    }
-
     Network(Genome genome) {
         this.genome = genome;
     }

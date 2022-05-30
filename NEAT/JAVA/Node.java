@@ -20,6 +20,6 @@ class Node {
 
     @Override
     public String toString() {
-        return "ID: " + this.id + "\nNodetype: " + this.type + "\n";
+        return "ID: " + this.id + ", Type: " + this.type + "\n";
     }
 }

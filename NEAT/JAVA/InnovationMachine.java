@@ -72,10 +72,6 @@ class InnovationMachine {
         this.existingbiases = new ArrayList<Bias>();
         this.innovation = startinnovation;
     }
-
-    InnovationMachine() {
-        this(1);
-    }
     
     InnovationMachine(int startinnovation) {
         this.startinnovation = startinnovation;

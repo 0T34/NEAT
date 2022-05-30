@@ -21,6 +21,6 @@ class Bias {
 
     @Override
     public String toString() {
-        return "Node: " + this.node + " Innovationnumber: " + this.innovation_number + "value: " + this.value + "\n";
+        return "Node: " + this.node + ", Innovation Number: " + this.innovation_number + ", Value: " + this.value + "\n";
     }
 }

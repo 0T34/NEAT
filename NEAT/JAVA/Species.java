@@ -9,6 +9,8 @@ class Species
 
     float bestfitness;
 
+    ArrayList<FitnessInfo> genomes;
+
     float GetTotalSharedFitness() {
         float totalfitness = 0;
         for (FitnessInfo fi : this.genomes) {
@@ -33,8 +35,6 @@ class Species
             return null;
         }
     }
-
-    ArrayList<FitnessInfo> genomes;
 
     Species(Genome representative) {
         this(representative, new ArrayList<FitnessInfo>());
@@ -95,7 +95,7 @@ class Species
                 }
             }
         }
-          
+
         while (this.genomes.size() > 5) {
             this.genomes.remove(0);
         }

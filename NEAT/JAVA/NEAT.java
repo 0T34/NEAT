@@ -14,13 +14,12 @@ class InputTarget {
 class NEAT {
   	public static void main(String args[]) {
 		Random r = new Random();
-		Genome start = new Genome(2, 1, 5);
         Network currentnet = null;
 
 		HashMap<Chance, Float> mutationrates = new HashMap<Chance, Float>();
 		mutationrates.put(Chance.AddConnection, 0.45f);
 
-		Population p = new Population(150, start, 3f, 1f, 1f, 0.4f, mutationrates, r);
+		Population p = new Population(150, 2, 1, 5, 3.0f, 1.0f, 1.0f, 0.4f, mutationrates, r);
 		InputTarget[] it = {
             new InputTarget(new float[] {1, 0}, 1), 
             new InputTarget(new float[] {0, 1}, 1), 
@@ -61,7 +60,6 @@ class NEAT {
                                "obtained: (" + currentnet.FeedForward(currentit.input)[0] + ")");
 		}
 		
-		NetworkPrinter np = new NetworkPrinter(winnergenome);
-		np.Print();
+        System.out.println("\n" + winnergenome.toString());
 	}
 }

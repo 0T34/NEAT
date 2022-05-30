@@ -8,72 +8,46 @@ enum Chance {
 
 class Population {
     HashMap<Integer, FitnessInfo> FittestGenome;
-    
     HashMap<Integer, ArrayList<Genome>> fittestgenomesingeneration;
   
     ArrayList<Species> species;
-  
     int currentgeneration;
-  
     int currentspecies;
-  
     int currentgenome;
   
     int populationsize;
+
+    HashMap<Chance, Float> chances;
+  
+    int inputnodes;
+    int outputnodes;
+    int max_mutation_attempts;
     
+    float threshold;
+    float excessimportance;
+    float disjointimportance;
+    float deltaweightimportance;
+  
+    Genome startgenome;
+    InnovationMachine innovationmachine;
+
     void ResetGenomePointer() {
         this.currentspecies = 0;
         this.currentgenome = 0;
     }
   
-    HashMap<Chance, Float> chances;
-  
-    int inputnodes;
-  
-    int outputnodes;
-    
-    int max_mutation_attempts;
-    
-    float threshold;
-  
-    float excessimportance;
-  
-    float disjointimportance;
-    
-    float deltaweightimportance;
-  
-    Genome startgenome;
-  
-    InnovationMachine innovationmachine;
-  
     Population(int populationsize, int inputnodes, int outputnodes, int max_mutation_attempts, float threshold, float excessimportance, 
                float disjointimportance, float averageweightdiffimportance, HashMap<Chance, Float> chances, Random r) {
         SetupChances(chances);
-        this.max_mutation_attempts = startgenome.max_mutation_attempts;
+        this.max_mutation_attempts = max_mutation_attempts;
         this.populationsize = populationsize;
-        this.inputnodes = startgenome.inputs;
-        this.outputnodes = startgenome.outputs;
+        this.inputnodes = inputnodes;
+        this.outputnodes = outputnodes;
         this.threshold = threshold;
         this.deltaweightimportance = averageweightdiffimportance;
         this.disjointimportance = disjointimportance;
         this.excessimportance = excessimportance;
         this.startgenome = new Genome(inputnodes, outputnodes, max_mutation_attempts);
-        this.innovationmachine = new InnovationMachine(this.startgenome.GetMaxinnovation() + 1);
-        ResetPopulation(r);
-    }
-
-    Population(int populationsize, Genome startgenome, float threshold, float excessimportance, float disjointimportance,
-               float averageweightdiffimportance, HashMap<Chance, Float> chances, Random r) {
-        SetupChances(chances);
-        this.max_mutation_attempts = startgenome.max_mutation_attempts;
-        this.populationsize = populationsize;
-        this.inputnodes = startgenome.inputs;
-        this.outputnodes = startgenome.outputs;
-        this.threshold = threshold;
-        this.deltaweightimportance = averageweightdiffimportance;
-        this.disjointimportance = disjointimportance;
-        this.excessimportance = excessimportance;
-        this.startgenome = startgenome;
         this.innovationmachine = new InnovationMachine(this.startgenome.GetMaxinnovation() + 1);
         ResetPopulation(r);
     }

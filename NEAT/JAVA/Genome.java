@@ -21,7 +21,7 @@ class Genome {
     int max_mutation_attempts;
     
     // Represents the ID the node that is next added receives.
-    int nextnodenumber = 1;
+    int next_node_number;
 
     // Returns the biggest innovation_number in the genome
     int GetMaxinnovation() {
@@ -44,17 +44,11 @@ class Genome {
         return maxinnovation;
     }
 
-    Genome() {
-        this.connections = new ArrayList<Connection>();
-        this.biases = new ArrayList<Bias>();
-        this.nodes = new ArrayList<Node>();
-        this.nextnodenumber = 1;
-    }
-
     Genome(int inputs, int outputs, int max_mutation_attempts) {
         this.connections = new ArrayList<Connection>();
         this.biases = new ArrayList<Bias>();
         this.nodes = new ArrayList<Node>();
+        this.next_node_number = 1;
 
         for (int i = 0; i < inputs; i++) {
             this.AddNode(Nodetype.Input);
@@ -83,20 +77,20 @@ class Genome {
 
         this.connections = new ArrayList<Connection>();
         this.biases = new ArrayList<Bias>();
-        this.nextnodenumber = this.nodes.size() + 1;
+        this.next_node_number = this.nodes.size() + 1;
         this.max_mutation_attempts = max_mutation_attempts;
     }
 
     // Adds a Node and gives it an incremental ID and returns the ID. Warning: It is usually not a good idea to add an input or output node outside the constructor using this method.
     int AddNode(Nodetype type) {
-        this.nodes.add(new Node(this.nextnodenumber, type));
+        this.nodes.add(new Node(this.next_node_number, type));
         if (type == Nodetype.Input) {
             this.inputs++;
         } else if (type == Nodetype.Output) {
             this.outputs++;
         }
 
-        return this.nextnodenumber++;
+        return this.next_node_number++;
     }
 
     // Gets the node with the specified ID.
@@ -167,18 +161,7 @@ class Genome {
             return false;
         }
     }
-    
-    // Adds a new Connection and assigns an incremental innovation_number. For this to work the Innovationnumber in contoadd has to be set to 0.
-    boolean AddConnection(Connection contoadd, InnovationMachine im) {
-        im.GetInnovation(contoadd); //assigns the connection an innovation_number
-        if (this.CanAddConnection(contoadd)) {
-            this.connections.add(contoadd);
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
+
     // Returns true if the specified node already has a bias
     boolean ContainsBias(int nodeid) {
         for (Bias b : this.biases) {
@@ -220,17 +203,6 @@ class Genome {
     
     // Adds a new Bias. This method should only be used for creating a startgenome/copying a genome/...
     boolean AddBias(Bias b) {
-        if (this.CanAddBias(b)) {
-            this.biases.add(b);
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    // Adds a bias and assigns an incremental innovation_number. For this to work b has to have an innovation_number of 0.
-    boolean AddBias(Bias b, InnovationMachine im) {
-        im.GetInnovation(b);
         if (this.CanAddBias(b)) {
             this.biases.add(b);
             return true;
@@ -346,7 +318,8 @@ class Genome {
         connectionstoadd.add(new Connection(newNodeID, connectionToReplace.target_node_id, true, 0, connectionToReplace.weight));
 
         for (Connection connectiontoadd : connectionstoadd) {
-            this.AddConnection(connectiontoadd, im); // Add the new connections
+            im.GetInnovation(connectiontoadd);
+            this.AddConnection(connectiontoadd); // Add the new connections
         }
 
         connectionToReplace.is_expressed = false;
@@ -389,7 +362,8 @@ class Genome {
             }
 
             Connection conToAdd = new Connection(from, to, true, 0, r.nextFloat() * 2 - 1);
-            if (this.AddConnection(conToAdd, im)) {
+            im.GetInnovation(conToAdd);
+            if (this.AddConnection(conToAdd)) {
                 return; // if a connection was succesfully added then return
             }
         } while (attempts++ < this.max_mutation_attempts);
@@ -405,7 +379,8 @@ class Genome {
         do {
             int node = Math.round(r.nextFloat() * (this.nodes.size() - 1)) + 1; // find a random node
             Bias biastoadd = new Bias(node, r.nextFloat() * 2 - 1, 0);
-            if (this.AddBias(biastoadd, im)) {
+            im.GetInnovation(biastoadd);
+            if (this.AddBias(biastoadd)) {
                 return; // if the bias was added succesfully then return
             }
         } while (attempts++ < this.max_mutation_attempts);
@@ -495,10 +470,10 @@ class Genome {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Input Nodes: " + this.inputs + " Output Nodes: " + this.outputs + "\n");
+        sb.append("Input Nodes: " + this.inputs + ", Output Nodes: " + this.outputs + "\n");
         sb.append("Max Mutation Attempts: " + this.max_mutation_attempts + "\n");
         
-        sb.append("Nodes:\n");
+        sb.append("\n" + "Nodes:\n");
         for (Node wn : this.nodes) {
             sb.append(wn.toString());
         }
